@@ -1,5 +1,14 @@
 /* eslint-disable */
 
+interface ImportMetaEnv {
+  readonly SUPABASE_URL: string;
+  readonly SUPABASE_KEY: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: string;
