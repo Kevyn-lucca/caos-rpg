@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ExampleComponent from '/src/components/ExampleComponent.vue';
+import skillsComponent from 'src/components/skillsCompenent.vue';
 </script>
 <template>
-  <ExampleComponent></ExampleComponent>
+  <skillsComponent></skillsComponent>
 </template>
