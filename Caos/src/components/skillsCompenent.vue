@@ -12,27 +12,22 @@
         <template #default>
           <q-card>
             <q-card-section class="habilidade-caption">
-              <p v-if="!habilidade.editing" @click="habilidade.editing = true">
-                {{ habilidade.caption }}
-              </p>
-              <q-input
-                v-else
-                v-model="habilidade.caption"
-                @blur="habilidade.editing = false"
-                type="textarea"
-                dense
-                autofocus
-                borderless
-                :style="{
-                  resize: 'none',
-                  maxHeight: '10em',
-                  overflowY: 'auto',
-                  whiteSpace: 'pre-line',
-                  wordWrap: 'break-word',
-                  scroll: 'none',
-                }"
-              />
+              <p>{{ habilidade.caption }}</p>
             </q-card-section>
+            <q-card-actions>
+              <q-btn
+                round
+                icon="edit"
+                color="blue"
+                @click="editSkill(habilidade)"
+              />
+              <q-btn
+                round
+                icon="close"
+                color="red"
+                @click="deleteSkill(habilidade.id)"
+              />
+            </q-card-actions>
           </q-card>
         </template>
       </q-expansion-item>
@@ -49,7 +44,7 @@
   </div>
 
   <q-dialog v-model="dialog" :backdrop-filter="backdropFilter">
-    <q-card style="width: 100rem; height: 100rem">
+    <q-card style="width: 100rem">
       <q-card-section class="row items-center q-pb-none text-h6">
         Adicionar Nova Habilidade
       </q-card-section>
@@ -74,7 +69,6 @@
           label="Descrição"
           filled
           type="textarea"
-          style="height: 52rem"
         />
       </q-card-section>
 
@@ -105,26 +99,7 @@ interface ListaArray {
 const dialog = ref(false);
 const backdropFilter = ref('blur(4px) saturate(150%)');
 
-const listaHabilidades = ref<ListaArray[]>([
-  {
-    title: 'Quebra Ossos',
-    caption:
-      'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quo officiis veniam laborum non ex nulla fugiat recusandae mollitia laudantium deleniti ab, animi nemo velit possimus modi quasi tenetur eligendi incidunt?',
-    icon: 'school',
-    value: 2,
-    id: 1,
-    editing: false,
-  },
-  {
-    title: 'Modo Fera',
-    caption:
-      'Lorem ipsum ex nulla fugia velit possimus modi quasi tenetur eligendi incidunt?',
-    icon: 'pets',
-    value: 16,
-    id: 2,
-    editing: false,
-  },
-]);
+const listaHabilidades = ref<ListaArray[]>([]);
 
 const newSkill = ref({
   title: '',
@@ -132,23 +107,43 @@ const newSkill = ref({
   value: 1,
 });
 
+const editingSkill = ref<ListaArray | null>(null);
+
 function openDialog() {
   dialog.value = true;
+  newSkill.value = { title: '', caption: '', value: 1 };
 }
 
 function addSkill() {
-  listaHabilidades.value.push({
-    title: newSkill.value.title,
-    caption: newSkill.value.caption,
-    value: newSkill.value.value,
-    icon: 'pets',
-    id: listaHabilidades.value.length + 1,
-    editing: false,
-  });
+  if (editingSkill.value) {
+    Object.assign(editingSkill.value, newSkill.value);
+    editingSkill.value = null;
+  } else {
+    listaHabilidades.value.push({
+      title: newSkill.value.title,
+      caption: newSkill.value.caption,
+      value: newSkill.value.value,
+      icon: 'pets',
+      id: listaHabilidades.value.length + 2,
+      editing: false,
+    });
+  }
   dialog.value = false;
-  newSkill.value = { title: '', caption: '', value: 1 };
+}
+
+function editSkill(habilidade: ListaArray) {
+  editingSkill.value = habilidade;
+  newSkill.value = { ...habilidade };
+  openDialog();
+}
+
+function deleteSkill(id: number) {
+  listaHabilidades.value = listaHabilidades.value.filter(
+    (habilidade) => habilidade.id !== id
+  );
 }
 </script>
+
 <style scoped>
 .habilidade-caption {
   max-height: 10em;
